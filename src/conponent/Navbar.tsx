@@ -10,7 +10,7 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LoginContext } from "./Context/UserContext";
 
 const pages = [
@@ -24,6 +24,8 @@ const settings = [
   { name: "Outbox", path: "/outbox" },
 ];
 const ResponsiveAppBar = () => {
+  const navigate = useNavigate();
+
   const { loginUser, setLoginUser } = useContext(LoginContext);
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
@@ -41,6 +43,7 @@ const ResponsiveAppBar = () => {
   const handleLogout = () => {
     setLoginUser(null);
     setAnchorElUser(null);
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -61,10 +64,12 @@ const ResponsiveAppBar = () => {
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            <>Hello {loginUser? loginUser.name : "Guest"}</>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar
+                  alt={loginUser ? loginUser.name : ""}
+                  src="/static/images/avatar/2.jpg"
+                />
               </IconButton>
             </Tooltip>
             <Menu

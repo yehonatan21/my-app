@@ -3,8 +3,9 @@ import { useForm } from "react-hook-form";
 import Button from "@mui/material/Button";
 import "../styles/login.css";
 import { LoginContext } from "./Context/UserContext";
-import { Link } from "react-router-dom";
-import { RegisterFormInputs } from "./Register"; //BUG
+import { Link, useNavigate } from "react-router-dom";
+import { RegisterFormInputs } from "./Register"; //BUG interface folder?
+import { FormControl, TextField } from "@mui/material";
 
 interface LoginFormInputs {
   email: string;
@@ -13,6 +14,7 @@ interface LoginFormInputs {
 
 const Login: React.FC = () => {
   const { setLoginUser } = useContext(LoginContext);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -26,47 +28,59 @@ const Login: React.FC = () => {
       (user: RegisterFormInputs) =>
         user.email === data.email && user.password === data.password
     );
-
-    setLoginUser(user); // TODO: create lable to show user name
+    if (user) {
+      setLoginUser(user); // TODO: create lable to show user name
+      navigate("/inbox", { replace: true });
+    }
   };
 
   return (
     <>
       <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
-        <h1>Login</h1>
-        <div className="form-group">
-          <label className="form-label" htmlFor="email">
-            Email:
-          </label>
-          <input
-            className="form-input"
-            type="text"
+        <FormControl
+          id="form"
+          sx={{
+            display: "flex",
+            flexGrow: 1,
+            padding: "5%",
+            borderRadius: "3%",
+            border: 1,
+            backgroundColor: "white",
+          }}
+        >
+          <h1>Login</h1>
+          <TextField
+            id="outlined-basic"
+            label="Email"
+            variant="outlined"
+            margin="normal"
+            required
             {...register("email", { required: true })}
           />
           {errors.email && (
             <span className="form-error">This field is required</span>
           )}
-        </div>
-        <div className="form-group">
-          <label className="form-label" htmlFor="password">
-            Password:
-          </label>
-          <input
-            className="form-input"
+          <TextField
+            id="outlined-basic"
+            label="Password"
+            variant="outlined"
+            margin="normal"
             type="password"
+            required
             {...register("password", { required: true })}
           />
+
           {errors.password && (
             <span className="form-error">This field is required</span>
           )}
-        </div>
-        <button className="form-button" type="submit">
-          Login
-        </button>
+          <Button type="submit" variant="contained">
+            Login
+          </Button>
+          <Button variant="text" component={Link} to={"/register"}>
+            Register
+          </Button>
+        </FormControl>
       </form>
-      <Button variant="text" component={Link} to={"/register"}>
-        Register
-      </Button>
     </>
   );
 };
