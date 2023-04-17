@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -11,15 +11,21 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { Link } from "react-router-dom";
+import { LoginContext } from "./Context/UserContext";
 
 const pages = [
   { name: "Home", path: "/" },
   { name: "Timer", path: "/timer" },
   { name: "Calculator", path: "/calculator" },
 ];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
-
+const settings = [
+  { name: "Login", path: "/login" },
+  { name: "Inbox", path: "/inbox" },
+  { name: "Outbox", path: "/outbox" },
+];
 const ResponsiveAppBar = () => {
+  const { loginUser, setLoginUser } = useContext(LoginContext);
+
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -29,6 +35,11 @@ const ResponsiveAppBar = () => {
   };
 
   const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const handleLogout = () => {
+    setLoginUser(null);
     setAnchorElUser(null);
   };
 
@@ -50,6 +61,7 @@ const ResponsiveAppBar = () => {
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
+            <>Hello {loginUser? loginUser.name : "Guest"}</>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
@@ -72,10 +84,18 @@ const ResponsiveAppBar = () => {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                <MenuItem
+                  key={setting.name}
+                  onClick={handleCloseUserMenu}
+                  component={Link}
+                  to={setting.path}
+                >
+                  <Typography textAlign="center">{setting.name}</Typography>
                 </MenuItem>
               ))}
+              <MenuItem key={"Logout"} onClick={handleLogout}>
+                <Typography textAlign="center">{"Logout"}</Typography>
+              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>

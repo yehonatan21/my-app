@@ -58,7 +58,7 @@ export const Calculator = () => {
 
   return (
     <Box sx={{ position: "fixed", flexGrow: 1,  padding: 5, borderRadius: '5%', border: 1 }}>
-      <TextField label="Input" value={input} variant="outlined" />
+      <TextField value={input} variant="outlined" />
       <Grid>
         <Grid container item spacing={2}>
           <Row
@@ -80,7 +80,7 @@ export const Calculator = () => {
         </Grid>
         <Grid container item spacing={2}>
           <Row
-            Row={[" + ", " * ", ".", "="]}
+            Row={[" + ", "0", "*", "="]}
             handleButtonClick={handleButtonClick}
           />
         </Grid>
