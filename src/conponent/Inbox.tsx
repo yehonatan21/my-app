@@ -6,55 +6,38 @@ import {
   GridRowsProp,
 } from "@mui/x-data-grid";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { LoginContext } from "./Context/UserContext";
+import { v4 as uuidv4 } from "uuid";
 
 interface Email {
-  id: number;
+  id: string;
   sender: string;
-  recipient: string;
-  subject: string;
-  body: string;
-}
-
-const emails: Email[] = [
-  {
-    id: 1,
-    sender: "jane@example.com",
-    recipient: "john@example.com",
-    subject: "Meeting Reminder",
-    body: "Just a reminder that we have a meeting at 2pm today.",
-  },
-  {
-    id: 2,
-    sender: "bob@example.com",
-    recipient: "jane@example.com",
-    subject: "New Project",
-    body: "I have a new project proposal that I would like to discuss.",
-  },
-  {
-    id: 3,
-    sender: "john@example.com",
-    recipient: "bob@example.com",
-    subject: "Vacation Request",
-    body: "I would like to request vacation time for next week.",
-  },
-];
-
-interface Email {
-  id: number;
-  sender: string;
-  recipient: string;
+  recipients: string;
   subject: string;
   body: string;
 }
 
 const EmailList: React.FC = () => {
-  const rows: GridRowsProp = [...emails];
+  const { loginUser } = useContext(LoginContext);
+  const posts = JSON.parse(localStorage.getItem("posts") || "[]");
+  const matchingEmail: Email[] = posts.find(
+    (post: Email) => post.recipients === loginUser?.email
+  );
+
+  const rows: GridRowsProp = matchingEmail
+    ? [
+        {
+          ...matchingEmail,
+          id: uuidv4(),
+        },
+      ]
+    : [];
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "id" },
+    // { field: "id", headerName: "id" }, // FIXME: time stamp
     { field: "sender", headerName: "Sender", width: 150 },
-    { field: "recipient", headerName: "Recipient", width: 150 },
+    { field: "recipients", headerName: "Recipient", width: 150 },
     { field: "subject", headerName: "Subject", width: 150 },
   ];
 
@@ -62,7 +45,6 @@ const EmailList: React.FC = () => {
 
   const handleRowClick = (params: GridRowParams) => {
     const selectedRow = rows.find((row) => row.id === params.id) ?? null;
-    console.log(selectedRow);
     setSelectedRow(selectedRow);
   };
 
@@ -71,10 +53,22 @@ const EmailList: React.FC = () => {
   };
 
   return (
-    //FIXME: position
+    //FIXME: position and style
     <div style={{ display: "flex" }}>
       <DataGrid
-        sx={{ height: 300, width: "100%" }}
+        sx={{
+          backgroundColor: "white",
+          m: 2,
+          height: 300,
+          width: "100%",
+          boxShadow: 2,
+          border: 2,
+          borderColor: "primary.light",
+          "& .MuiDataGrid-cell:hover": {
+            cursor: "pointer",
+            color: "primary.main",
+          },
+        }}
         onRowClick={handleRowClick}
         rows={rows}
         columns={columns}

@@ -9,9 +9,9 @@ import Login from "./conponent/Login";
 import UserProvider from "./conponent/Context/UserContext";
 import Register from "./conponent/Register";
 import Outbox from "./conponent/Outbox";
+import PrivateRoute from "./conponent/PrivateRoute";
 
 const App: React.FC = () => {
-
   return (
     <div className="App">
       <header className="App-header">
@@ -19,12 +19,26 @@ const App: React.FC = () => {
           <BrowserRouter>
             <Navbar />
             <Routes>
-              <Route path="/timer" Component={Timer} />
-              <Route path="/inbox" Component={Inbox} />
-              <Route path="/outbox" Component={Outbox} />
-              <Route path="/login" Component={Login} />
-              <Route path="/register" Component={Register} />
-              <Route path="/calculator" Component={Calculator} />
+              <Route path="/timer" element={<Timer />} />
+              <Route
+                path="/inbox"
+                element={
+                  <PrivateRoute>
+                    <Inbox />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/outbox"
+                element={
+                  <PrivateRoute>
+                    <Outbox />
+                  </PrivateRoute>
+                }
+              />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/calculator" element={<Calculator />} />
             </Routes>
           </BrowserRouter>
         </UserProvider>

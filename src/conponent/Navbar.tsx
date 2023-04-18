@@ -13,20 +13,24 @@ import MenuItem from "@mui/material/MenuItem";
 import { Link, useNavigate } from "react-router-dom";
 import { LoginContext } from "./Context/UserContext";
 
-const pages = [
-  { name: "Home", path: "/" },
-  { name: "Timer", path: "/timer" },
-  { name: "Calculator", path: "/calculator" },
-];
-const settings = [
-  { name: "Login", path: "/login" },
-  { name: "Inbox", path: "/inbox" },
-  { name: "Outbox", path: "/outbox" },
-];
 const ResponsiveAppBar = () => {
-  const navigate = useNavigate();
-
   const { loginUser, setLoginUser } = useContext(LoginContext);
+  
+  const pages = [
+    { name: "Home", path: "/" },
+    { name: "Timer", path: "/timer" },
+    { name: "Calculator", path: "/calculator" },
+  ];
+  const userSettings = [
+    { name: "Inbox", path: "/inbox" },
+    { name: "Outbox", path: "/outbox" },
+  ];
+  const guestSettings = [
+    { name: "Login", path: "/login" },
+    { name: "Register", path: "/register" },
+  ];
+
+  const navigate = useNavigate();
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -88,19 +92,33 @@ const ResponsiveAppBar = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem
-                  key={setting.name}
-                  onClick={handleCloseUserMenu}
-                  component={Link}
-                  to={setting.path}
-                >
-                  <Typography textAlign="center">{setting.name}</Typography>
+              {loginUser
+                ? userSettings.map((setting) => (
+                    <MenuItem
+                      key={setting.name}
+                      onClick={handleCloseUserMenu}
+                      component={Link}
+                      to={setting.path}
+                    >
+                      <Typography textAlign="center">{setting.name}</Typography>
+                    </MenuItem>
+                  ))
+                : guestSettings.map((setting) => (
+                    <MenuItem
+                      key={setting.name}
+                      onClick={handleCloseUserMenu}
+                      component={Link}
+                      to={setting.path}
+                    >
+                      <Typography textAlign="center">{setting.name}</Typography>
+                    </MenuItem>
+                  ))}
+
+              {loginUser ? (
+                <MenuItem key={"Logout"} onClick={handleLogout}>
+                  <Typography textAlign="center">{"Logout"}</Typography>
                 </MenuItem>
-              ))}
-              <MenuItem key={"Logout"} onClick={handleLogout}>
-                <Typography textAlign="center">{"Logout"}</Typography>
-              </MenuItem>
+              ) : null}
             </Menu>
           </Box>
         </Toolbar>

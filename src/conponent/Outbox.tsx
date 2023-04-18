@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import "../styles/login.css";
 import { Autocomplete, Button, FormControl, TextField } from "@mui/material";
+import { LoginContext } from "./Context/UserContext";
 
 export interface CreatePostFormInputs {
   subject: string;
@@ -11,11 +12,16 @@ export interface CreatePostFormInputs {
 
 const Outbox: React.FC = () => {
   const users = JSON.parse(localStorage.getItem("users") || "[]");
+  const { loginUser } = useContext(LoginContext);
 
-  const { handleSubmit } = useForm<CreatePostFormInputs>();
+  const {
+    register,
+    handleSubmit,
+  } = useForm<CreatePostFormInputs>();
 
   const onSubmit = (data: CreatePostFormInputs) => {
     const post = {
+      sender: loginUser?.name,
       subject: data.subject,
       recipients: data.recipients,
       body: data.body,
@@ -52,6 +58,7 @@ const Outbox: React.FC = () => {
           variant="outlined"
           margin="normal"
           required
+          {...register("subject", { required: true })}
         />
 
         <Autocomplete
@@ -68,6 +75,7 @@ const Outbox: React.FC = () => {
               label="Recipients"
               margin="normal"
               required
+              {...register("recipients", { required: true })}
             />
           )}
         />
@@ -78,8 +86,12 @@ const Outbox: React.FC = () => {
           label="Body"
           multiline
           rows={4}
+          {...register("body", { required: true })}
+
         />
-        <Button type="submit" variant="contained">Send</Button>
+        <Button type="submit" variant="contained">
+          Send
+        </Button>
       </FormControl>
     </form>
   );
