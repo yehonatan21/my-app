@@ -19,6 +19,11 @@ async def read_user(user_id: str):
     return UserServices.get_user_by_id(user_id)
 
 
+@router.post("/login", tags=["users"])
+async def connect_user(data: Dict):
+    return UserServices.connect_user(data)
+
+
 @router.post("/create", tags=["users"])
 async def create_user(user: User):
     return UserServices.create_user(user)
