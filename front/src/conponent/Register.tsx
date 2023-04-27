@@ -1,6 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import "../styles/login.css";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -33,32 +34,20 @@ const Register: React.FC = () => {
     formState: { errors },
   } = useForm<RegisterFormInputs>();
 
-  const onSubmit = (data: RegisterFormInputs) => {
-    const users = JSON.parse(
-      localStorage.getItem("users") || "[]"
-    ) as RegisterFormInputs[];
+  const onSubmit = async (data: RegisterFormInputs) => {
     const user = {
       name: data.name,
       email: data.email,
       password: data.password,
     };
-    if (
-      data.password === data.verifyPassword
-      && (users.find((user: any) => user.email === data.email) === undefined) //FIXME: any
-    ) {
-      setDialogContent("User created successfully");
-      // console.log(dialogContent);
-      // setOpen(true);
-      if (users) {
-        const usersArray = users;
-        usersArray.push(user as any); //FIXME: any
-        localStorage.setItem("users", JSON.stringify(usersArray));
-      } else {
-        const usersArray = [];
-        usersArray.push(user);
-        localStorage.setItem("users", JSON.stringify(usersArray));
-      }
-      navigate("/login", { replace: true });
+    if (data.password === data.verifyPassword) {
+      await axios
+        .post("http://127.0.0.1:8000/user/create", user)
+        .then((res) => {
+          setDialogContent("User created successfully");
+          navigate("/login", { replace: true });
+        })
+        .catch((err) => console.log(err.message)); //FIXME: add labale that indicate what the problem is
     }
   };
 

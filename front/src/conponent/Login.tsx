@@ -4,11 +4,11 @@ import Button from "@mui/material/Button";
 import "../styles/login.css";
 import { LoginContext } from "./Context/UserContext";
 import { Link, useNavigate } from "react-router-dom";
-import { RegisterFormInputs } from "./Register"; //BUG interface folder?
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 import { FormControl, TextField } from "@mui/material";
+import axios from "axios";
 
 interface LoginFormInputs {
   email: string;
@@ -16,9 +16,9 @@ interface LoginFormInputs {
 }
 
 const Login: React.FC = () => {
-  const { setLoginUser } = useContext(LoginContext);
+  const { setLoginUser } = useContext(LoginContext); // FIXME <User>
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState<boolean>(false);
 
   const {
     register,
@@ -29,19 +29,25 @@ const Login: React.FC = () => {
   const handleClose = () => {
     setOpen(false);
   };
-
+  
   const onSubmit = (data: LoginFormInputs) => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const user = users.find(
-      (user: RegisterFormInputs) =>
-        user.email === data.email && user.password === data.password
-    );
-    if (user) {
-      setLoginUser(user); // TODO: create lable to show user name
-      navigate("/inbox", { replace: true });
-    } else {
+    axios.post("http://127.0.0.1:8000/auth/token", new URLSearchParams({
+      username: data.email, 
+      password: data.password,
+      client_id: 'user-client'
+    })).then(async (res) => {
+      if(res.data.access_token){
+        //FIXME: any
+        const user:any = await axios.get("http://127.0.0.1:8000/auth/users/me/",{headers: {
+          Authorization: "bearer " + res.data.access_token
+       }})
+        setLoginUser(user.data);
+        navigate("/inbox", { replace: true });
+      }
+    }).catch((err) => {
+      console.log(err.message);
       setOpen(true);
-    }
+    })
   };
 
   return (

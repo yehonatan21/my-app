@@ -97,7 +97,7 @@ async def get_current_active_user(
     return current_user
 
 
-@router.post("/token", response_model=Token)
+@router.post("/token", tags=['auth'], response_model=Token)
 async def login_for_access_token(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ):
@@ -116,7 +116,7 @@ async def login_for_access_token(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/users/me/", response_model=User)
+@router.get("/users/me/", tags=['auth'], response_model=User)
 async def read_users_me(
         current_user: Annotated[User, Depends(get_current_active_user)]
 ):

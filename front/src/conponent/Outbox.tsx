@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import "../styles/login.css";
+import axios from "axios"
 import { Autocomplete, Button, FormControl, TextField } from "@mui/material";
 import { LoginContext } from "./Context/UserContext";
 
@@ -26,6 +27,11 @@ const Outbox: React.FC = () => {
       recipients: data.recipients,
       body: data.body,
     };
+    axios.post("http://127.0.0.1:8000/post/create", post).then((res) => {
+      console.log(res.data);
+    }).catch((err) => {
+      console.log(err);
+    })
     const posts = localStorage.getItem("posts");
     if (posts) {
       const postsArray = JSON.parse(posts);
