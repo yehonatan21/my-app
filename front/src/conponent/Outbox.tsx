@@ -1,7 +1,7 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import "../styles/login.css";
-import axios from "axios"
+import axios from "axios";
 import { Autocomplete, Button, FormControl, TextField } from "@mui/material";
 import { LoginContext } from "./Context/UserContext";
 
@@ -12,38 +12,38 @@ export interface CreatePostFormInputs {
 }
 
 const Outbox: React.FC = () => {
-  const users = JSON.parse(localStorage.getItem("users") || "[]");
+  const [recipients, setRecipients] = useState<any[]>([]);
   const { loginUser } = useContext(LoginContext);
 
-  const {
-    register,
-    handleSubmit,
-  } = useForm<CreatePostFormInputs>();
+  const { register, handleSubmit } = useForm<CreatePostFormInputs>();
 
   const onSubmit = (data: CreatePostFormInputs) => {
     const post = {
-      sender: loginUser?.name,
-      subject: data.subject,
-      recipients: data.recipients,
-      body: data.body,
+      "sender": loginUser?.name,
+      "recipient": data.recipients,
+      "subject": data.subject,
+      "body": data.body,
     };
-    axios.post("http://127.0.0.1:8000/post/create", post).then((res) => {
-      console.log(res.data);
-    }).catch((err) => {
-      console.log(err);
-    })
-    const posts = localStorage.getItem("posts");
-    if (posts) {
-      const postsArray = JSON.parse(posts);
-      postsArray.push(post);
-      localStorage.setItem("posts", JSON.stringify(postsArray));
-    } else {
-      const postsArray = [];
-      postsArray.push(post);
-      localStorage.setItem("posts", JSON.stringify(postsArray));
-    }
+    axios
+      .post("http://127.0.0.1:8000/mail/create", post)
+      .then((res) => {
+        console.log(post);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
+  const getRecipients = async () => {
+    const response = await axios.get("http://127.0.0.1:8000/user/");
+    const result = response.data.map((user: any) => user.email);
+    setRecipients(result);
+  };
+
+  useEffect(() => {
+    getRecipients();
+  }, []);
+  
   return (
     <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
       <FormControl
@@ -69,11 +69,8 @@ const Outbox: React.FC = () => {
 
         <Autocomplete
           disablePortal
-          id="combo-box-demo"
-          options={users.map((user: any) => {
-            //FIXME: any
-            return user.email;
-          })}
+          id="recipients"
+          options={recipients}
           sx={{ width: 300 }}
           renderInput={(params) => (
             <TextField
@@ -93,7 +90,6 @@ const Outbox: React.FC = () => {
           multiline
           rows={4}
           {...register("body", { required: true })}
-
         />
         <Button type="submit" variant="contained">
           Send

@@ -9,26 +9,41 @@ import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useContext, useState } from "react";
 import { LoginContext } from "./Context/UserContext";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 interface Email {
   id: string;
   sender: string;
-  recipients: string;
+  recipient: string;
   subject: string;
   body: string;
 }
 
 const EmailList: React.FC = () => {
   const { loginUser } = useContext(LoginContext);
-  const posts = JSON.parse(localStorage.getItem("posts") || "[]");
-  const matchingEmail: Email[] = posts.find(
-    (post: Email) => post.recipients === loginUser?.email
-  );
+  const [emails, setEmails] = useState<any[]>([]);
+  const getEmails = async () => {
+    const response = await axios.get("http://127.0.0.1:8000/mail/",{
+      withCredentials: true,
+      headers: {
+        authorization: `Bearer ${loginUser.token}`,
+      },
+    });    
+    console.log(loginUser);
+    const result = response.data.find(
+      (post: Email) => post.recipient === loginUser?.user.email
+    );
+    setEmails(result);
+  };
 
-  const rows: GridRowsProp = matchingEmail
+  React.useEffect(() => {
+    getEmails();
+  }, []);
+
+  const rows: GridRowsProp = emails
     ? [
         {
-          ...matchingEmail,
+          ...emails,
           id: uuidv4(),
         },
       ]
@@ -37,7 +52,7 @@ const EmailList: React.FC = () => {
   const columns: GridColDef[] = [
     // { field: "id", headerName: "id" }, // FIXME: time stamp
     { field: "sender", headerName: "Sender", width: 150 },
-    { field: "recipients", headerName: "Recipient", width: 150 },
+    { field: "recipient", headerName: "Recipient", width: 150 },
     { field: "subject", headerName: "Subject", width: 150 },
   ];
 

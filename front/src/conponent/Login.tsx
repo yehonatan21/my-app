@@ -16,7 +16,7 @@ interface LoginFormInputs {
 }
 
 const Login: React.FC = () => {
-  const { setLoginUser } = useContext(LoginContext); // FIXME <User>
+  const { loginUser, setLoginUser } = useContext(LoginContext);
   const navigate = useNavigate();
   const [open, setOpen] = React.useState<boolean>(false);
 
@@ -29,25 +29,33 @@ const Login: React.FC = () => {
   const handleClose = () => {
     setOpen(false);
   };
-  
+
   const onSubmit = (data: LoginFormInputs) => {
-    axios.post("http://127.0.0.1:8000/auth/token", new URLSearchParams({
-      username: data.email, 
-      password: data.password,
-      client_id: 'user-client'
-    })).then(async (res) => {
-      if(res.data.access_token){
-        //FIXME: any
-        const user:any = await axios.get("http://127.0.0.1:8000/auth/users/me/",{headers: {
-          Authorization: "bearer " + res.data.access_token
-       }})
-        setLoginUser(user.data);
-        navigate("/inbox", { replace: true });
-      }
-    }).catch((err) => {
-      console.log(err.message);
-      setOpen(true);
-    })
+    axios
+      .post("http://127.0.0.1:8000/user/login", {
+        email: data.email,
+        password: data.password,
+      })
+      .then(async (res) => {
+        if (res.data.token) {
+          //FIXME: any
+          const user: any = await axios.get(
+            "http://127.0.0.1:8000/auth/get_token",
+            {
+              withCredentials: true,
+              headers: {
+                Authorization: res.data.token,
+              },
+            }
+          );
+          setLoginUser(user.data);
+          navigate("/inbox", { replace: true });
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+        setOpen(true);
+      });
   };
 
   return (
@@ -68,6 +76,7 @@ const Login: React.FC = () => {
           <TextField
             id="outlined-basic"
             label="Email"
+            defaultValue={"a@gmail.com"}
             variant="outlined"
             margin="normal"
             required
@@ -81,6 +90,7 @@ const Login: React.FC = () => {
             label="Password"
             variant="outlined"
             margin="normal"
+            defaultValue={"111111"}
             type="password"
             required
             {...register("password", { required: true })}
@@ -105,9 +115,7 @@ const Login: React.FC = () => {
       >
         <DialogTitle id="alert-dialog-title">{"User Not Found"}</DialogTitle>
         <DialogActions>
-          <Button onClick={handleClose}>
-            Close
-          </Button>
+          <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
     </>

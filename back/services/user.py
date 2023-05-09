@@ -7,7 +7,7 @@ from manager.user import UserManager
 
 class UserServices:
     @staticmethod
-    def create_user(user: Dict):
+    def create_user(user: User):
         return UserManager.create_user_to_db(user)
 
     def connect_user(data: Dict) -> bool:

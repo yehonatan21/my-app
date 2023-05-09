@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from mongoengine import connect
+from logger import RequestLogger
 
 from routers.user import router as users_router
 from routers.auth import router as auth_router
@@ -11,7 +12,7 @@ origins = [
     "http://localhost.tiangolo.com",
     "https://localhost.tiangolo.com",
     "http://localhost",
-    "http://localhost:3000",
+    "http://localhost:3000"
 ]
 
 app = FastAPI()

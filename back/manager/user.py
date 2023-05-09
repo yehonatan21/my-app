@@ -8,7 +8,7 @@ from models.user import User as user_repo
 
 class UserManager:
     @staticmethod
-    def create_user_to_db(user: Dict) -> Dict:
+    def create_user_to_db(user: User) -> Dict:
         return user_repo(name=user.name,
                          email=user.email,
                          password=bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())).save().to_json()
