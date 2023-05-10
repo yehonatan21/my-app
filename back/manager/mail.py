@@ -7,12 +7,13 @@ from models.mail import Mail as Mail_repo
 
 class MailManager:
     @staticmethod
-    def create_mail(mail: Dict) -> Dict:
-        return Mail_repo(sender=mail.sender,
-                         recipient=mail.recipient,
-                         subject=mail.subject,
-                         body=mail.body,
-                         ).save().to_json()
+    def create_mail(mail: Mail) -> Dict:
+        return Mail_repo(
+            sender=mail.sender,
+            recipient=mail.recipient,
+            subject=mail.subject,
+            body=mail.body,
+        ).save().to_dict().to_json()
 
     @staticmethod
     def get_mail_by_id(mail_id: string):
@@ -27,6 +28,5 @@ class MailManager:
         return [mail.to_json() for mail in Mail_repo.objects()]
 
     @staticmethod
-    def delete_mail(name: string) -> Dict:
-        Mail_repo.objects.get(name=name).delete()
-        return
+    def delete_mail(mail_id: string) -> Dict | None:
+        return Mail_repo.objects(_id=mail_id).delete()

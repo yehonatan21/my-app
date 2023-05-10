@@ -5,10 +5,9 @@ import {
   GridRowParams,
   GridRowsProp,
 } from "@mui/x-data-grid";
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useContext, useState } from "react";
 import { LoginContext } from "./Context/UserContext";
-import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 
 interface Email {
@@ -23,14 +22,13 @@ const EmailList: React.FC = () => {
   const { loginUser } = useContext(LoginContext);
   const [emails, setEmails] = useState<any[]>([]);
   const getEmails = async () => {
-    const response = await axios.get("http://127.0.0.1:8000/mail/",{
+    const response = await axios.get("http://127.0.0.1:8000/mail/", {
       withCredentials: true,
       headers: {
         authorization: `Bearer ${loginUser.token}`,
       },
-    });    
-    console.log(loginUser);
-    const result = response.data.find(
+    });
+    const result = response.data.filter(
       (post: Email) => post.recipient === loginUser?.user.email
     );
     setEmails(result);
@@ -40,14 +38,7 @@ const EmailList: React.FC = () => {
     getEmails();
   }, []);
 
-  const rows: GridRowsProp = emails
-    ? [
-        {
-          ...emails,
-          id: uuidv4(),
-        },
-      ]
-    : [];
+  const rows: GridRowsProp = emails as any;
 
   const columns: GridColDef[] = [
     // { field: "id", headerName: "id" }, // FIXME: time stamp
@@ -65,6 +56,24 @@ const EmailList: React.FC = () => {
 
   const handleClose = () => {
     setSelectedRow(null);
+  };
+
+  const handleDelete = async (mail: any) => {
+    try {
+      const response = await axios.delete(
+        `http://127.0.0.1:8000/mail/delete/${mail.id}`,
+        {
+          withCredentials: true,
+          headers: {
+            authorization: `Bearer ${loginUser.token}`,
+          },
+        }
+      );
+      await getEmails();
+    } catch (e: any) {
+      console.log(e.message);
+    }
+    handleClose();
   };
 
   return (
@@ -91,6 +100,9 @@ const EmailList: React.FC = () => {
       <Dialog open={!!selectedRow} onClose={handleClose}>
         <DialogTitle>{selectedRow?.subject}</DialogTitle>
         <DialogContent>{selectedRow?.body}</DialogContent>
+        <Button variant="contained" onClick={() => handleDelete(selectedRow)}>
+          Delete
+        </Button>
       </Dialog>
     </div>
   );

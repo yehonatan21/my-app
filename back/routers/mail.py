@@ -10,9 +10,13 @@ router = APIRouter()
 
 
 @router.get("/", dependencies=[Depends(JWTBearer())], tags=["mail"])
-async def read_mails(request: Request):
-    print(request.headers["authorization"])
+async def read_mails():
     return MailServices.get_all()
+
+
+@router.get("/{id}", dependencies=[Depends(JWTBearer())], tags=["mail"])
+async def read_mails(_id):
+    return MailServices.get_mail_by_id(_id)
 
 
 # @router.get("/{user_id}", tags=["mail"])
@@ -24,6 +28,13 @@ async def read_mails(request: Request):
 async def create_mail(mail: Mail):
     return MailServices.create_mail(mail)
 
-# @router.delete("/{user_id}/delete", tags=["user"])
-# async def delete_user(user_id: str):
-#     return {"Implement Deleting user"}
+
+@router.delete("/delete/{mail_id}", dependencies=[Depends(JWTBearer())], tags=["user"])
+async def delete_user(mail_id: str):
+    # return {"message": f"Mail with id {mail_id} deleted successfully."}
+    return MailServices.delete_mail(mail_id)
+
+
+@router.delete("/delete/", dependencies=[Depends(JWTBearer())], tags=["user"])
+async def delete_user(mail_id: str):
+    return {"message": "All Emails deleted successfully."}

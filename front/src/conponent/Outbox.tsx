@@ -19,15 +19,20 @@ const Outbox: React.FC = () => {
 
   const onSubmit = (data: CreatePostFormInputs) => {
     const post = {
-      "sender": loginUser?.name,
+      "sender": loginUser?.user.name,
       "recipient": data.recipients,
       "subject": data.subject,
       "body": data.body,
     };
     axios
-      .post("http://127.0.0.1:8000/mail/create", post)
+      .post("http://127.0.0.1:8000/mail/create", post ,{
+        withCredentials: true,
+        headers: {
+          authorization: `Bearer ${loginUser.token}`,
+        },
+      })
       .then((res) => {
-        console.log(post);
+        console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -35,7 +40,12 @@ const Outbox: React.FC = () => {
   };
 
   const getRecipients = async () => {
-    const response = await axios.get("http://127.0.0.1:8000/user/");
+    const response = await axios.get("http://127.0.0.1:8000/user/",{
+      withCredentials: true,
+      headers: {
+        authorization: `Bearer ${loginUser.token}`,
+      },
+    });
     const result = response.data.map((user: any) => user.email);
     setRecipients(result);
   };

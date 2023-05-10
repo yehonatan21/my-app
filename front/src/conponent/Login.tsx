@@ -16,7 +16,7 @@ interface LoginFormInputs {
 }
 
 const Login: React.FC = () => {
-  const { loginUser, setLoginUser } = useContext(LoginContext);
+  const { setLoginUser } = useContext(LoginContext);
   const navigate = useNavigate();
   const [open, setOpen] = React.useState<boolean>(false);
 
