@@ -13,7 +13,7 @@ class MailManager:
             recipient=mail.recipient,
             subject=mail.subject,
             body=mail.body,
-        ).save().to_dict().to_json()
+        ).save().to_dict()
 
     @staticmethod
     def get_mail_by_id(mail_id: string):

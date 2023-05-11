@@ -18,7 +18,7 @@ interface LoginFormInputs {
 const Login: React.FC = () => {
   const { setLoginUser } = useContext(LoginContext);
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState<boolean>(false);
+  const [isOpen, setOpen] = React.useState<boolean>(false);
 
   const {
     register,
@@ -60,7 +60,7 @@ const Login: React.FC = () => {
 
   return (
     <>
-      <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
+      <form className="login-form" style={{"display": "flex"}} onSubmit={handleSubmit(onSubmit)}>
         <FormControl
           id="form"
           sx={{
@@ -108,7 +108,7 @@ const Login: React.FC = () => {
         </FormControl>
       </form>
       <Dialog
-        open={open}
+        open={isOpen}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"

@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.params import Depends
 
 from mongoengine import connect
+
+from auth.auth_bearer import JWTBearer
 from logger import RequestLogger
 
 from routers.user import router as users_router
@@ -19,7 +22,7 @@ app = FastAPI()
 
 app.include_router(users_router, prefix='/user')
 app.include_router(auth_router, prefix='/auth')
-app.include_router(mail_router, prefix='/mail')
+app.include_router(mail_router, dependencies=[Depends(JWTBearer())], prefix='/mail')
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
