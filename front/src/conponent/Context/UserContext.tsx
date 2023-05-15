@@ -1,5 +1,4 @@
 import { createContext, useState } from "react";
-import { RegisterFormInputs } from "../Register";
 
 export interface LoginContextType {
   loginUser: any | null;

@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import "../styles/login.css";
-import axios from "axios";
 import {
   Autocomplete,
   Button,
@@ -12,6 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import { LoginContext } from "./Context/UserContext";
+import { backAPI } from "../api/back_api";
 
 export interface CreatePostFormInputs {
   subject: string;
@@ -23,7 +23,6 @@ const Outbox: React.FC = () => {
   const [recipients, setRecipients] = useState<any[]>([]);
   const { loginUser } = useContext(LoginContext);
   const [isOpen, setOpen] = React.useState<boolean>(false);
-  // const [value, setValue] = useState<null| string>("a@gmail.com");
 
   const { register, handleSubmit } = useForm<CreatePostFormInputs>();
 
@@ -31,38 +30,21 @@ const Outbox: React.FC = () => {
     setOpen(false);
   };
 
-  const onSubmit = (data: CreatePostFormInputs) => {
+  const onSubmit = async (data: CreatePostFormInputs) => {
     const post = {
       sender: loginUser?.user.name,
       recipient: data.recipients,
       subject: data.subject,
       body: data.body,
     };
-    axios
-      .post("http://127.0.0.1:8000/mail/create", post, {
-        withCredentials: true,
-        headers: {
-          authorization: `Bearer ${loginUser.token}`,
-        },
-      })
-      .then((res: any) => {
-        if (res.status === 200) {
-          setOpen(true);
-          // setValue(null)
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const res = await backAPI.createMail(loginUser.token, post);
+    if (res.status === 200) {
+      setOpen(true);
+    }
   };
 
   const getRecipients = async () => {
-    const response = await axios.get("http://127.0.0.1:8000/user/", {
-      withCredentials: true,
-      headers: {
-        authorization: `Bearer ${loginUser.token}`,
-      },
-    });
+    const response = await backAPI.getRecipients(loginUser.token);
     const result = response.data.map((user: any) => user.email);
     setRecipients(result);
   };
@@ -70,10 +52,8 @@ const Outbox: React.FC = () => {
   useEffect(() => {
     getRecipients();
   }, []);
-  
-  // useEffect(() => {
-  // }, [setValue]);
 
+  
   return (
     <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
       <FormControl
@@ -93,7 +73,6 @@ const Outbox: React.FC = () => {
           label="Subject"
           variant="outlined"
           margin="normal"
-          // value={value}
           required
           {...register("subject", { required: true })}
         />
@@ -108,7 +87,6 @@ const Outbox: React.FC = () => {
               {...params}
               label="Recipients"
               margin="normal"
-              // value={value}
               required
               {...register("recipients", { required: true })}
             />

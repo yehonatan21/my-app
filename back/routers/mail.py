@@ -1,8 +1,5 @@
-from fastapi import APIRouter, Request
-from typing import Dict
+from fastapi import APIRouter
 from schemas.mail import Mail
-from fastapi import FastAPI, Body, Depends
-from auth.auth_bearer import JWTBearer
 
 from services.mail import MailServices
 
@@ -29,12 +26,12 @@ async def create_mail(mail: Mail):
     return MailServices.create_mail(mail)
 
 
-@router.delete("/delete/{mail_id}", tags=["user"])
+@router.delete("/delete/{mail_id}", tags=["mail"])
 async def delete_user(mail_id: str):
     # return {"message": f"Mail with id {mail_id} deleted successfully."}
     return MailServices.delete_mail(mail_id)
 
 
-@router.delete("/delete/", tags=["user"])
+@router.delete("/delete/", tags=["mail"])
 async def delete_user(mail_id: str):
     return {"message": "All Emails deleted successfully."}

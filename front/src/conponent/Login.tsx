@@ -8,7 +8,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 import { FormControl, TextField } from "@mui/material";
-import axios from "axios";
+import { backAPI } from "../api/back_api";
 
 interface LoginFormInputs {
   email: string;
@@ -30,37 +30,24 @@ const Login: React.FC = () => {
     setOpen(false);
   };
 
-  const onSubmit = (data: LoginFormInputs) => {
-    axios
-      .post("http://127.0.0.1:8000/user/login", {
-        email: data.email,
-        password: data.password,
-      })
-      .then(async (res) => {
-        if (res.data.token) {
-          //FIXME: any
-          const user: any = await axios.get(
-            "http://127.0.0.1:8000/auth/get_token",
-            {
-              withCredentials: true,
-              headers: {
-                Authorization: res.data.token,
-              },
-            }
-          );
-          setLoginUser(user.data);
-          navigate("/inbox", { replace: true });
-        }
-      })
-      .catch((err) => {
-        console.log(err.message);
-        setOpen(true);
-      });
+  const onSubmit = async (data: LoginFormInputs) => {
+    const res = await backAPI.login(data);
+    if (res.status === 200) {
+      const auth = await backAPI.auth(res);
+      setLoginUser(auth.data);
+      navigate("/inbox", { replace: true });
+    } else {
+      setOpen(true);
+    }
   };
 
   return (
     <>
-      <form className="login-form" style={{"display": "flex"}} onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="login-form"
+        style={{ display: "flex" }}
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <FormControl
           id="form"
           sx={{

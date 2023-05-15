@@ -8,7 +8,7 @@ import {
 import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useContext, useState } from "react";
 import { LoginContext } from "./Context/UserContext";
-import axios from "axios";
+import { backAPI } from "../api/back_api";
 
 interface Email {
   id: string;
@@ -22,12 +22,7 @@ const EmailList: React.FC = () => {
   const { loginUser } = useContext(LoginContext);
   const [emails, setEmails] = useState<any[]>([]);
   const getEmails = async () => {
-    const response = await axios.get("http://127.0.0.1:8000/mail/", {
-      withCredentials: true,
-      headers: {
-        authorization: `Bearer ${loginUser.token}`,
-      },
-    });
+    const response = await backAPI.getEmails(loginUser.token)
     const result = response.data.filter(
       (post: Email) => post.recipient === loginUser?.user.email
     );
@@ -60,15 +55,7 @@ const EmailList: React.FC = () => {
 
   const handleDelete = async (mail: any) => {
     try {
-      const response = await axios.delete(
-        `http://127.0.0.1:8000/mail/delete/${mail.id}`,
-        {
-          withCredentials: true,
-          headers: {
-            authorization: `Bearer ${loginUser.token}`,
-          },
-        }
-      );
+      await backAPI.deleteMail(loginUser.token, mail.id)
       await getEmails();
     } catch (e: any) {
       console.log(e.message);

@@ -1,4 +1,3 @@
-from typing import Dict
 from models.mail import Mail
 
 from manager.mail import MailManager

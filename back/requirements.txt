@@ -1,0 +1,14 @@
+mongoengine~=0.27.0
+fastapi~=0.89.1
+PyJWT~=2.6.0
+pydantic~=1.10.7
+fastapi-login~=1.9.0
+jose~=1.0.0
+python-jose~=3.3.0
+python-decouple~=3.7
+passlib~=1.7.4
+bcrypt~=4.0.1
+pymongo~=4.3.3
+starlette~=0.22.0
+uvicorn~=0.20.0
+pydantic[email]

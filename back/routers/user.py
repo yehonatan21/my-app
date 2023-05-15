@@ -1,8 +1,5 @@
-from typing import Dict
-
-from fastapi import Body, Depends, APIRouter, Response, Request
+from fastapi import Body, Depends, APIRouter, Response, HTTPException
 import bcrypt
-from fastapi.params import Cookie
 from fastapi_login import LoginManager
 
 from auth.auth_bearer import JWTBearer
@@ -10,6 +7,7 @@ from schemas.user import User, UserLoginSchema
 from services.user import UserServices
 from auth.auth_handler import signJWT
 from decouple import config
+from utils import logger
 
 JWT_SECRET = config("secret")
 
@@ -80,9 +78,7 @@ async def user_login(response: Response, user: UserLoginSchema = Body(...)):
         manager.set_cookie(response, token)
         return {"message": "Cookie set successfully", "token": token}
         # return signJWT(user.email)
-    return {  # add status code
-        "error": "Wrong login details!"
-    }
+    raise HTTPException(status_code=404, detail="Wrong login details!")
 
 
 @router.post("/signup", tags=["user"])
@@ -93,6 +89,7 @@ async def create_user(user: User = Body(...)):
 
 def check_user(data: UserLoginSchema):
     users = UserServices.get_all()
+    # logger.warning(users)
 
     for user in users:
         if user['email'] == data.email and bcrypt.checkpw(data.password.encode('utf-8'),

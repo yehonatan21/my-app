@@ -4,6 +4,7 @@
 .history
 build
 .vs
+data
 
 # dependencies
 __pycache__

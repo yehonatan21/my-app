@@ -1,7 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import "../styles/login.css";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -11,6 +10,7 @@ import {
   FormControl,
   TextField,
 } from "@mui/material";
+import { backAPI } from "../api/back_api";
 
 export interface RegisterFormInputs {
   name: string;
@@ -41,13 +41,11 @@ const Register: React.FC = () => {
       password: data.password,
     };
     if (data.password === data.verifyPassword) {
-      await axios
-        .post("http://127.0.0.1:8000/user/create", user)
-        .then((res) => {
-          setDialogContent("User created successfully");
-          navigate("/login", { replace: true });
-        })
-        .catch((err) => console.log(err.message)); //FIXME: add labale that indicate what the problem is
+      const res = await backAPI.singup(user);
+      if (res.status === 200) {
+        setDialogContent("User created successfully");
+        navigate("/login", { replace: true });
+      }
     }
   };
 
