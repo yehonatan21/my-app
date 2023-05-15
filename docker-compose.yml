@@ -23,6 +23,9 @@ services:
     build:
         context: ./front/.
         dockerfile: Dockerfile_Nginx
+    environment:
+      - IP=fastapi-backend
+      - PORT=8000
     image: react-nginx:latest
     container_name: react-nginx
     ports:
@@ -35,7 +38,7 @@ services:
         context: ./back/.
         dockerfile: Dockerfile
     image: fastapi-backend:latest
-    container_name: fastapi-backend
+    container_name: fastapi-backend 
     ports:
       - 8000:8000
     # command: uvicorn main:app --reload
