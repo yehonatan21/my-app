@@ -12,3 +12,4 @@ pymongo~=4.3.3
 starlette~=0.22.0
 uvicorn~=0.20.0
 pydantic[email]
+python-dotenv~=1.0.0

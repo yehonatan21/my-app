@@ -10,7 +10,7 @@ services:
       - 27017:27017
     networks:
       - net
- 
+
   ngnix:
     image: nginx
     container_name: nginx
@@ -21,11 +21,8 @@ services:
 
   fornt:
     build:
-        context: ./front/.
-        dockerfile: Dockerfile_Nginx
-    environment:
-      - FRONT_IP=fastapi-backend
-      - PORT=8000
+      context: ./front/.
+      dockerfile: Dockerfile_Nginx
     image: react-nginx:latest
     container_name: react-nginx
     ports:
@@ -35,13 +32,12 @@ services:
 
   back:
     build:
-        context: ./back/.
-        dockerfile: Dockerfile
+      context: ./back/.
+      dockerfile: Dockerfile
     environment:
-        - DB_IP=mongo
-        - DB_PORT=27017
+      - DB_IP=mongo
     image: fastapi-backend:latest
-    container_name: fastapi-backend 
+    container_name: fastapi-backend
     ports:
       - 8000:8000
     networks:
