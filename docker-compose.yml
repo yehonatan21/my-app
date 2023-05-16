@@ -24,7 +24,7 @@ services:
         context: ./front/.
         dockerfile: Dockerfile_Nginx
     environment:
-      - IP=fastapi-backend
+      - FRONT_IP=fastapi-backend
       - PORT=8000
     image: react-nginx:latest
     container_name: react-nginx
@@ -37,11 +37,13 @@ services:
     build:
         context: ./back/.
         dockerfile: Dockerfile
+    environment:
+        - DB_IP=mongo
+        - DB_PORT=27017
     image: fastapi-backend:latest
     container_name: fastapi-backend 
     ports:
       - 8000:8000
-    # command: uvicorn main:app --reload
     networks:
       - net
 

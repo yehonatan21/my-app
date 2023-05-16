@@ -1,15 +1,17 @@
 import axios from "axios";
 import { config } from "./config";
 
+console.info(config)
+
 export const backAPI = {
   login: async (data: any) => {
-    return axios.post(`http://${config.IP}:${config.PORT}/user/login`, {
+    return axios.post(`http://${config.FRONT_IP}:${config.FRONT_PORT}/user/login`, {
       email: data.email,
       password: data.password,
     });
   },
   auth: async (res: any) => {
-    return axios.get(`http://${config.IP}:${config.PORT}/auth/get_token`, {
+    return axios.get(`http://${config.FRONT_IP}:${config.FRONT_PORT}/auth/get_token`, {
       withCredentials: true,
       headers: {
         Authorization: res.data.token,
@@ -17,11 +19,11 @@ export const backAPI = {
     });
   },
   singup: async (user: any) => {
-    return axios.post(`http://${config.IP}:${config.PORT}/user/signup`, user);
+    return axios.post(`http://${config.FRONT_IP}:${config.FRONT_PORT}/user/signup`, user);
   },
 
   getEmails: async (token: any) => {
-    return axios.get(`http://${config.IP}:${config.PORT}/mail/`, {
+    return axios.get(`http://${config.FRONT_IP}:${config.FRONT_PORT}/mail/`, {
       withCredentials: true,
       headers: {
         authorization: `Bearer ${token}`,
@@ -31,7 +33,7 @@ export const backAPI = {
 
   deleteMail: async (token: string, mailId: string) => {
     return axios.delete(
-      `http://${config.IP}:${config.PORT}/mail/delete/${mailId}`,
+      `http://${config.FRONT_IP}:${config.FRONT_PORT}/mail/delete/${mailId}`,
       {
         withCredentials: true,
         headers: {
@@ -42,7 +44,7 @@ export const backAPI = {
   },
 
   createMail: async (token: string, post: object) => {
-    return axios.post(`http://${config.IP}:${config.PORT}/mail/create`, post, {
+    return axios.post(`http://${config.FRONT_IP}:${config.FRONT_PORT}/mail/create`, post, {
       withCredentials: true,
       headers: {
         authorization: `Bearer ${token}`,
