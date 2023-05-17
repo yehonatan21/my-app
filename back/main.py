@@ -8,7 +8,8 @@ from auth.auth_bearer import JWTBearer
 from routers.user import router as users_router
 from routers.auth import router as auth_router
 from routers.mail import router as mail_router
-from utils import logger
+
+# from utils import logger
 
 load_dotenv()
 
@@ -26,7 +27,9 @@ connect_to_db(db='Reco', host=DB_IP, port=DB_PORT)
 
 # BUG: how to fix it to be cross over all origins
 origins = [
-    "http://localhost:8081"
+    # "*"
+    "http://localhost"
+    # "http://localhost:8000"
 ]
 
 app = FastAPI()
@@ -38,10 +41,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(users_router, prefix='/user')
-app.include_router(auth_router, prefix='/auth')
+app.include_router(users_router, prefix='/api/user')
+app.include_router(auth_router, prefix='/api/auth')
 app.include_router(mail_router, dependencies=[
-    Depends(JWTBearer())], prefix='/mail')
+    Depends(JWTBearer())], prefix='/api/mail')
 
 
 @app.get("/hello", tags=["hello"])

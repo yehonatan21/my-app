@@ -4,7 +4,7 @@ import Timer from "./conponent/Timer";
 import Inbox from "./conponent/Inbox";
 import { Calculator } from "./conponent/Calculator";
 import Navbar from "./conponent/Navbar";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate  } from "react-router-dom";
 import Login from "./conponent/Login";
 import UserProvider from "./conponent/Context/UserContext";
 import Register from "./conponent/Register";
@@ -19,6 +19,8 @@ const App: React.FC = () => {
           <BrowserRouter>
             <Navbar />
             <Routes>
+            <Route path="/" element={<Navigate to="/home" />} />
+              <Route path="/home" element={<></>} />
               <Route path="/timer" element={<Timer />} />
               <Route
                 path="/inbox"

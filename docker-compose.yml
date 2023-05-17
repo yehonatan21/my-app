@@ -11,22 +11,16 @@ services:
     networks:
       - net
 
-  ngnix:
-    image: nginx
-    container_name: nginx
-    ports:
-      - 80:80
-    networks:
-      - net
-
-  fornt:
+  front:
     build:
-      context: ./front/.
+      context: front
       dockerfile: Dockerfile_Nginx
     image: react-nginx:latest
-    container_name: react-nginx
+    container_name: front
     ports:
-      - 8081:80
+      - 80:80
+    environment:
+      NODE_ENV: production
     networks:
       - net
 
@@ -37,7 +31,7 @@ services:
     environment:
       - DB_IP=mongo
     image: fastapi-backend:latest
-    container_name: fastapi-backend
+    container_name: backend
     ports:
       - 8000:8000
     networks:
