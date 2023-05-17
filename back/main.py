@@ -8,6 +8,7 @@ from auth.auth_bearer import JWTBearer
 from routers.user import router as users_router
 from routers.auth import router as auth_router
 from routers.mail import router as mail_router
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 # from utils import logger
 
@@ -41,6 +42,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(HTTPSRedirectMiddleware)
 app.include_router(users_router, prefix='/api/user')
 app.include_router(auth_router, prefix='/api/auth')
 app.include_router(mail_router, dependencies=[
