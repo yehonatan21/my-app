@@ -28,9 +28,9 @@ connect_to_db(db='Reco', host=DB_IP, port=DB_PORT)
 
 # BUG: how to fix it to be cross over all origins
 origins = [
-    # "*"
+    "*"
     "http://localhost"
-    # "http://localhost:8000"
+    "http://localhost:8000"
 ]
 
 app = FastAPI()
