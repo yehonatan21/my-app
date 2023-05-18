@@ -1,4 +1,5 @@
 import os
+import ssl
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.params import Depends
@@ -20,13 +21,11 @@ DB_PORT = int(os.getenv('DB_PORT'))
 
 def connect_to_db(db='Reco', host='127.0.0.1', port=27017):
     client = connect(db=db, host=host, port=port)
-    # logger.info('Connected Successfully')
     return client
 
 
 connect_to_db(db='Reco', host=DB_IP, port=DB_PORT)
 
-# BUG: how to fix it to be cross over all origins
 origins = [
     "*"
     "http://localhost"
@@ -35,6 +34,12 @@ origins = [
 
 app = FastAPI()
 
+ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+ssl_context.load_cert_chain(
+    certfile="./ssl/self-signed.crt", keyfile="./ssl/self-signed.key")
+
+app.add_middleware(HTTPSRedirectMiddleware)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -42,7 +47,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.add_middleware(HTTPSRedirectMiddleware)
+
 app.include_router(users_router, prefix='/api/user')
 app.include_router(auth_router, prefix='/api/auth')
 app.include_router(mail_router, dependencies=[
@@ -52,5 +57,3 @@ app.include_router(mail_router, dependencies=[
 @app.get("/hello", tags=["hello"])
 async def read_mails():
     return {"hello": "world"}
-
-# logger.info("Trying to connect")
