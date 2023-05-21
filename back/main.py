@@ -1,6 +1,10 @@
 import os
+from urllib.request import Request
+
+from starlette.responses import JSONResponse
+
 import ssl
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.params import Depends
 from dotenv import load_dotenv
@@ -10,8 +14,6 @@ from routers.user import router as users_router
 from routers.auth import router as auth_router
 from routers.mail import router as mail_router
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
-
-# from utils import logger
 
 load_dotenv()
 
@@ -27,9 +29,10 @@ def connect_to_db(db='Reco', host='127.0.0.1', port=27017):
 connect_to_db(db='Reco', host=DB_IP, port=DB_PORT)
 
 origins = [
-    "*"
-    "http://localhost"
-    "http://localhost:8000"
+    # "*"
+    # "http://localhost"
+    "https://localhost"
+    # "http://localhost:8000"
 ]
 
 app = FastAPI()
@@ -48,12 +51,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.get("/hello", tags=["hello"])
+async def read_mails():
+    return {"hello": "world"}
+
+
 app.include_router(users_router, prefix='/api/user')
 app.include_router(auth_router, prefix='/api/auth')
 app.include_router(mail_router, dependencies=[
     Depends(JWTBearer())], prefix='/api/mail')
 
 
-@app.get("/hello", tags=["hello"])
-async def read_mails():
-    return {"hello": "world"}
+@app.exception_handler(HTTPException)
+def my_http_exception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(status_code=exc.status_code, content={"message": exc.detail})

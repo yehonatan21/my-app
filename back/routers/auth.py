@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Annotated
+from typing import Annotated, Optional
 
 from starlette.responses import JSONResponse
 
@@ -40,11 +40,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 router = APIRouter()
 
 
-def verify_password(plain_password, hashed_password):
+def verify_password(plain_password, hashed_password) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_user(username: str) -> User | None:
+def get_user(username: str) -> Optional[User]:
     user = UserServices.get_user_by_email(username)
     if user:
         return User(**user)
@@ -52,7 +52,7 @@ def get_user(username: str) -> User | None:
         return None
 
 
-def authenticate_user(email: str, password: str):
+def authenticate_user(email: str, password: str) -> bool | User:
     user = UserServices.get_user_by_email(email)
     if not user:
         return False
@@ -61,7 +61,7 @@ def authenticate_user(email: str, password: str):
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -72,7 +72,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -92,23 +92,19 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 
-async def get_current_active_user(
-        current_user: Annotated[User, Depends(get_current_user)]
-):
+async def get_current_active_user(current_user: Annotated[User, Depends(get_current_user)]) -> User:
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 
 @router.get("/users/me/", tags=['auth'], response_model=User)
-async def read_users_me(
-        current_user: Annotated[User, Depends(get_current_active_user)]
-):
+async def read_users_me(current_user: Annotated[User, Depends(get_current_active_user)]) -> User:
     return current_user
 
 
 @router.get("/get_token")
-async def read_cookie(request: Request, token: str = Cookie(None)):
+async def read_cookie(request: Request, token: str = Cookie(None)) -> dict:
     if token:
         return {"token": token}
     elif request.cookies:
@@ -124,6 +120,4 @@ async def read_cookie(request: Request, token: str = Cookie(None)):
             user = await get_current_user(token)
             return {"token": token, "user": user}
     else:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"token": "not found"})
-
-        # return status{"token": "not found"}
+        JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"token": "not found"})

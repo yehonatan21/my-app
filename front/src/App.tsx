@@ -19,8 +19,8 @@ const App: React.FC = () => {
           <BrowserRouter>
             <Navbar />
             <Routes>
-            <Route path="/" element={<Navigate to="/home" />} />
-              <Route path="/home" element={<></>} />
+            <Route path="*" element={<Navigate to="/home" />} />
+              <Route path="/home" element={<h1>Welcome!</h1>} />
               <Route path="/timer" element={<Timer />} />
               <Route
                 path="/inbox"

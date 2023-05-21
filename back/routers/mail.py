@@ -33,5 +33,5 @@ async def delete_user(mail_id: str):
 
 
 @router.delete("/delete/", tags=["mail"])
-async def delete_user(mail_id: str):
+async def delete_user(mail_id: str) -> dict:
     return {"message": "All Emails deleted successfully."}
