@@ -16,7 +16,8 @@ const App: React.FC = () => {
     <div className="App">
       <header className="App-header">
         <UserProvider>
-          <BrowserRouter>
+          {/* FIX: REACT router */}
+          <BrowserRouter> 
             <Navbar />
             <Routes>
             <Route path="*" element={<Navigate to="/home" />} />

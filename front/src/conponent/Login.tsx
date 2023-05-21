@@ -10,7 +10,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { FormControl, TextField } from "@mui/material";
 import { backAPI } from "../api/back_api";
 
-interface LoginFormInputs {
+export interface LoginFormInputs {
   email: string;
   password: string;
 }

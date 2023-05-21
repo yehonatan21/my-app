@@ -4,6 +4,7 @@ import {
   GridColDef,
   GridRowParams,
   GridRowsProp,
+  GridValidRowModel,
 } from "@mui/x-data-grid";
 import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useContext, useState } from "react";
@@ -20,13 +21,16 @@ interface Email {
 
 const EmailList: React.FC = () => {
   const { loginUser } = useContext(LoginContext);
-  const [emails, setEmails] = useState<any[]>([]);
+  const [emails, setEmails] = useState<Email[]>([]);
+  
   const getEmails = async () => {
-    const response = await backAPI.getEmails(loginUser.token)
-    const result = response.data.filter(
-      (post: Email) => post.recipient === loginUser?.user.email
-    );
-    setEmails(result);
+    if (loginUser) {
+      const response = await backAPI.getEmails(loginUser.token);
+      const result = response.data.filter(
+        (post: Email) => post.recipient === loginUser.user.email
+      );
+      setEmails(result);
+    }
   };
 
   React.useEffect(() => {
@@ -42,7 +46,7 @@ const EmailList: React.FC = () => {
     { field: "subject", headerName: "Subject", width: 150 },
   ];
 
-  const [selectedRow, setSelectedRow] = useState<any>(null); //FIXME: any
+  const [selectedRow, setSelectedRow] = useState< GridValidRowModel | null>(null);
 
   const handleRowClick = (params: GridRowParams) => {
     const selectedRow = rows.find((row) => row.id === params.id) ?? null;
@@ -55,7 +59,7 @@ const EmailList: React.FC = () => {
 
   const handleDelete = async (mail: any) => {
     try {
-      await backAPI.deleteMail(loginUser.token, mail.id)
+      await backAPI.deleteMail(loginUser?.token ?? '', mail.id);
       await getEmails();
     } catch (e: any) {
       console.log(e.message);

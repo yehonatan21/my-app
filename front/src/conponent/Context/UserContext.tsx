@@ -1,18 +1,26 @@
 import { createContext, useState } from "react";
 
 export interface LoginContextType {
-  loginUser: any | null;
-  setLoginUser: React.Dispatch<React.SetStateAction<any | null>>;
+  loginUser: loginUser | undefined;
+  setLoginUser: React.Dispatch<React.SetStateAction<loginUser | undefined>>;
+}
+
+export interface loginUser {
+  user: {
+    name: string;
+    email: string;
+  };
+  token: string;
 }
 
 export const LoginContext = createContext<LoginContextType>({
-  loginUser: null,
+  loginUser: undefined,
   setLoginUser: () => {},
 });
 
+//FIXME: any
 export const UserProvider = ({ children }: any) => {
-  //FIXME: any
-  const [loginUser, setLoginUser] = useState<any | null>(null);
+  const [loginUser, setLoginUser] = useState<loginUser | undefined>(undefined);
 
   return (
     <LoginContext.Provider value={{ loginUser, setLoginUser }}>

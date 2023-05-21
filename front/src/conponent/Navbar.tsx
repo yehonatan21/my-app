@@ -46,7 +46,7 @@ const ResponsiveAppBar = () => {
 
   const handleLogout = () => {
     // TODO: delete token
-    setLoginUser(null);
+    setLoginUser(undefined);
     setAnchorElUser(null);
     navigate("/login", { replace: true });
   };

@@ -20,7 +20,7 @@ export interface CreatePostFormInputs {
 }
 
 const Outbox: React.FC = () => {
-  const [recipients, setRecipients] = useState<any[]>([]);
+  const [recipients, setRecipients] = useState<string[]>([]);
   const { loginUser } = useContext(LoginContext);
   const [isOpen, setOpen] = React.useState<boolean>(false);
 
@@ -37,23 +37,24 @@ const Outbox: React.FC = () => {
       subject: data.subject,
       body: data.body,
     };
-    const res = await backAPI.createMail(loginUser.token, post);
+    const res = await backAPI.createMail(loginUser?.token ?? "", post);
     if (res.status === 200) {
       setOpen(true);
     }
   };
 
   const getRecipients = async () => {
-    const response = await backAPI.getRecipients(loginUser.token);
-    const result = response.data.map((user: any) => user.email);
-    setRecipients(result);
+    if (loginUser) {
+      const response = await backAPI.getRecipients(loginUser.token);
+      const result = response.data.map((user: any) => user.email);
+      setRecipients(result);
+    }
   };
 
   useEffect(() => {
     getRecipients();
   }, []);
 
-  
   return (
     <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
       <FormControl
@@ -97,7 +98,6 @@ const Outbox: React.FC = () => {
           id="filled-multiline-static"
           margin="normal"
           label="Body"
-          // value={value}
           multiline
           rows={4}
           {...register("body", { required: true })}

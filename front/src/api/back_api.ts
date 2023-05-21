@@ -1,8 +1,11 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { config } from "./config";
+import { LoginFormInputs } from "../conponent/Login";
+
+// axios instance
 
 export const backAPI = {
-  login: async (data: any) => {
+  login: async (data: LoginFormInputs) => {
     return axios.post(
       `https://${config.FRONT_IP}:${config.FRONT_PORT}/api/user/login`,
       {
@@ -14,7 +17,7 @@ export const backAPI = {
       }
     );
   },
-  auth: async (res: any) => {
+  auth: async (res: AxiosResponse<any, any>) => {
     return axios.get(
       `https://${config.FRONT_IP}:${config.FRONT_PORT}/api/auth/get_token`,
       {
@@ -25,7 +28,7 @@ export const backAPI = {
       }
     );
   },
-  singup: async (user: any) => {
+  singup: async (user: Object) => {
     return axios.post(
       `https://${config.FRONT_IP}:${config.FRONT_PORT}/api/user/signup`,
       user,
@@ -35,7 +38,7 @@ export const backAPI = {
     );
   },
 
-  getEmails: async (token: any) => {
+  getEmails: async (token: string) => {
     return axios.get(
       `https://${config.FRONT_IP}:${config.FRONT_PORT}/api/mail/`,
       {
